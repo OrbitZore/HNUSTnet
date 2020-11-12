@@ -37,33 +37,44 @@ HNUSTnet::HNUSTnet(const User& user):_user(user) {
 	}
 }
 
-void HNUSTnet::freshStatus() {
+bool HNUSTnet::getOnline() {
 	string resp = HTTPclient("login.hnust.cn").get();
-	if (resp.find("上网登录页") != resp.npos) isOnline = false;
+	if (resp.find("上网登录页") != resp.npos) return false;
 	else
-	if (resp.find("注销页") != resp.npos) isOnline = true;
+	if (resp.find("注销页") != resp.npos) return true;
 	else {
 		cerr << "服务器返回在线状态错误\n";
 		exit(-101);
 	}
+}
 
+void HNUSTnet::login() {
+	HTTPclient client("login.hnust.cn:801");
+	vector<pair<string, string>> args;
+	args.push_back({ "c","Portal" });
+	args.push_back({ "a","login" });
+	args.push_back({ "login_method","1" });
+	args.push_back({ "wlan_user_ip",ip });
+	for (auto& i : _user.gen()) args.push_back(i);
+	args.push_back({ "v",to_string(rand() % 9000 + 1000) });
+	client.get("eportal/", args);
+}
+
+void HNUSTnet::logout() {
+	HTTPclient client("login.hnust.cn:801");
+	vector<pair<string, string>> args;
+	args.push_back({ "c","Portal" });
+	args.push_back({ "a","logout" });
+	args.push_back({ "login_method","1" });
+	args.push_back({ "wlan_user_ip",ip });
+	args.push_back({ "v",to_string(rand() % 9000 + 1000) });
+	client.get("eportal/", args);
 }
 
 void HNUSTnet::loop() {
 	io_context io;
 	while (true) {
-		freshStatus();
-		if (!isOnline) {
-			HTTPclient client("login.hnust.cn:801");
-			vector<pair<string, string>> args;
-			args.push_back({ "c","Portal" });
-			args.push_back({ "a","login"  });
-			args.push_back({ "login_method","1" });
-			args.push_back({ "wlan_user_ip",ip});
-			for (auto &i: _user.gen()) args.push_back(i);
-			args.push_back({"v",to_string(rand()%9000+1000)});
-			client.get("eportal/", args);
-		}
+		if (!getOnline()) login();
 		steady_timer t(io, seconds(5));
 		t.wait();
 	}

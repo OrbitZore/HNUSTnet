@@ -11,12 +11,11 @@
 class HNUSTnet {
 	User _user;
 	std::string ip;
-	bool isOnline;
-	void freshStatus();
-	void login();
-	void logout();
 public:
 	HNUSTnet(const User &user);
+	bool getOnline();
+	void login();
+	void logout();
 	void loop();
 };
 // TODO: 在此处引用程序需要的其他标头。

@@ -36,14 +36,20 @@ extern std::map<std::string, std::string> ISPtoArgs;
 int main(int argc, char* argv[]) {
 
 	int argStatus = [&]()->int {
-		if (argc < 5) return -2;
-		if (argc > 5) return -1;
+		if (argc <= 2) return -2;
 		method = string(argv[1]);
-		if (method != "login" && method != "logout") return 1;
-		user._name = string(argv[2]);
-		user._pwd = string(argv[3]);
-		user._isp = string(argv[4]);
-		if (ISPtoArgs.count(user._isp) == 0) return -7;
+		if (method == "login" || method == "autologin") {
+			if (argc < 5) return -9;
+			if (argc > 5) return -10;
+			user._name = string(argv[2]);
+			user._pwd = string(argv[3]);
+			user._isp = string(argv[4]);
+			if (ISPtoArgs.count(user._isp) == 0) return -7;
+		}
+		else if (method == "logout") {
+			if (argc > 2) return -9;
+			//To-Do
+		}else return -8;
 		return 0;
 	}();
 	switch (argStatus){
@@ -54,7 +60,7 @@ int main(int argc, char* argv[]) {
 			cerr << "参数太多\n";
 			break;
 		case -8:
-			cerr << "方法格式错误";
+			cerr << "方法格式错误\n";
 			break;
 		case -7:
 			cerr << "运营商格式错误\n";
@@ -62,6 +68,11 @@ int main(int argc, char* argv[]) {
 	}
 	if (argStatus < 0) { cout << helpMessage; return argStatus; }
 	HNUSTnet main(user);
-	main.loop();
+	if (method == "login")
+		main.login();
+	if (method == "autologin")
+		main.loop();
+	if (method == "logout")
+		main.logout();
 	return 0;
 }
