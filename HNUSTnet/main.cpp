@@ -1,33 +1,33 @@
-#include <iostream>
+ï»¿#include <iostream>
 #include <fstream>
 #include <iterator>
 #include "HNUSTnet.h"
 
 using namespace std;
 
-const string helpMessage = "\
-Ìá¹©Ğ£Ô°ÍøµÇÂ¼µÄAPIµ÷ÓÃ\n\
+const auto helpMessage = "\
+æä¾›æ ¡å›­ç½‘ç™»å½•çš„APIè°ƒç”¨\n\
 \n\
-:µÇÂ¼\n\
+:ç™»å½•\n\
 HNUSTnet login username userpwd ISPname\n\
 \n\
-username\tÓÃ»§Ãû\n\
-userpwd \tÓÃ»§ÃÜÂë\n\
-ISPname \tÔËÓªÉÌÓ¢ÎÄÃû(¼ûÏÂ)\n\
+username\tç”¨æˆ·å\n\
+userpwd \tç”¨æˆ·å¯†ç \n\
+ISPname \tè¿è¥å•†è‹±æ–‡å(è§ä¸‹)\n\
 \n\
-:×Ô¶¯µÇÂ¼\n\
+:è‡ªåŠ¨ç™»å½•\n\
 HNUSTnet autologin username userpwd ISPname\n\
 \n\
-:µÇ³ö\n\
+:ç™»å‡º\n\
 HNUSTnet logout\n\
 \n\
 \n\
-[ISPname]¿ÉÑ¡Öµ\n\
+[ISPname]å¯é€‰å€¼\n\
 \n\
-school\tĞ£Ô°Íø\n\
-telecom\tµçĞÅ\n\
-unicom\tÁªÍ¨\n\
-cmcc\tÖĞ¹úÒÆ¶¯\n\
+school\tæ ¡å›­ç½‘\n\
+telecom\tç”µä¿¡\n\
+unicom\tè”é€š\n\
+cmcc\tä¸­å›½ç§»åŠ¨\n\
 ";
 
 string config_file;
@@ -56,31 +56,31 @@ int main(int argc, char* argv[]) {
 	}();
 	switch (argStatus){
 		case -10: 
-			cerr << "²ÎÊıÌ«ÉÙ\n";
+			cerr << "å‚æ•°å¤ªå°‘\n";
 			break;
 		case -9:
-			cerr << "²ÎÊıÌ«¶à\n";
+			cerr << "å‚æ•°å¤ªå¤š\n";
 			break;
 		case -8:
-			cerr << "·½·¨¸ñÊ½´íÎó\n";
+			cerr << "æ–¹æ³•æ ¼å¼é”™è¯¯\n";
 			break;
 		case -7:
-			cerr << "ÔËÓªÉÌ¸ñÊ½´íÎó\n";
+			cerr << "è¿è¥å•†æ ¼å¼é”™è¯¯\n";
 			break;
 	}
 	if (argStatus < 0) { cout << helpMessage; return argStatus; }
 	HNUSTnet main(user);
 	if (method == "login") {
 		main.login();
-		if (!main.getOnline()) cout << "µÇÈëÊ§°Ü" << endl;
-		else cout << "µÇÈë³É¹¦" << endl;
+		if (!main.getOnline()) cout << "ç™»å…¥å¤±è´¥" << endl;
+		else cout << "ç™»å…¥æˆåŠŸ" << endl;
 	}
 	if (method == "autologin")
 		main.loop();
 	if (method == "logout") {
 		main.logout();
-		if (main.getOnline()) cout << "µÇ³öÊ§°Ü" << endl;
-		else cout << "µÇ³ö³É¹¦" << endl;
+		if (main.getOnline()) cout << "ç™»å‡ºå¤±è´¥" << endl;
+		else cout << "ç™»å‡ºæˆåŠŸ" << endl;
 	}
 	return 0;
 }
