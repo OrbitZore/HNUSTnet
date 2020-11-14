@@ -1,4 +1,4 @@
-#include "user.h"
+#include "User.h"
 using namespace std;
 
 std::map<std::string, std::string> ISPtoArgs = { {"school",""},{"telecom","%40telecom"},{"unicom","%40unicom"},{"cmcc","%40cmcc"} };
