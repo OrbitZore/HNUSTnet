@@ -42,8 +42,8 @@ int main(int argc, char* argv[]) {
 		if (argc < 2) return -2;
 		method = string(argv[1]);
 		if (method == "login" || method == "autologin") {
-			if (argc < 5) return -9;
-			if (argc > 5) return -10;
+			if (argc < 5) return -10;
+			if (argc > 5) return -9;
 			user._name = string(argv[2]);
 			user._pwd = string(argv[3]);
 			user._isp = string(argv[4]);
