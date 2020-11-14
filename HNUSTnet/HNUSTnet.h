@@ -14,8 +14,8 @@ class HNUSTnet {
 public:
 	HNUSTnet(const User &user);
 	bool getOnline();
-	void login();
-	void logout();
+	std::string login();
+	std::string logout();
 	void loop();
 };
 // TODO: 在此处引用程序需要的其他标头。

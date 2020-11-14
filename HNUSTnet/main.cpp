@@ -15,11 +15,14 @@ username\t用户名\n\
 userpwd \t用户密码\n\
 ISPname \t运营商英文名(见下)\n\
 \n\
+:自动登录\n\
+HNUSTnet autologin username userpwd ISPname\n\
+\n\
 :登出\n\
 HNUSTnet logout\n\
 \n\
 \n\
-ISPname可选值\n\
+[ISPname]可选值\n\
 \n\
 school\t校园网\n\
 telecom\t电信\n\
@@ -36,7 +39,7 @@ extern std::map<std::string, std::string> ISPtoArgs;
 int main(int argc, char* argv[]) {
 
 	int argStatus = [&]()->int {
-		if (argc <= 2) return -2;
+		if (argc < 2) return -2;
 		method = string(argv[1]);
 		if (method == "login" || method == "autologin") {
 			if (argc < 5) return -9;
@@ -48,7 +51,6 @@ int main(int argc, char* argv[]) {
 		}
 		else if (method == "logout") {
 			if (argc > 2) return -9;
-			//To-Do
 		}else return -8;
 		return 0;
 	}();
@@ -68,11 +70,17 @@ int main(int argc, char* argv[]) {
 	}
 	if (argStatus < 0) { cout << helpMessage; return argStatus; }
 	HNUSTnet main(user);
-	if (method == "login")
+	if (method == "login") {
 		main.login();
+		if (!main.getOnline()) cout << "登入失败" << endl;
+		else cout << "登入成功" << endl;
+	}
 	if (method == "autologin")
 		main.loop();
-	if (method == "logout")
+	if (method == "logout") {
 		main.logout();
+		if (main.getOnline()) cout << "登出失败" << endl;
+		else cout << "登出成功" << endl;
+	}
 	return 0;
 }

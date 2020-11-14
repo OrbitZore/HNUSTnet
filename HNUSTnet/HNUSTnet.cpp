@@ -2,9 +2,8 @@
 //
 
 #include "HNUSTnet.h"
-using namespace boost::asio;
-using boost::asio::chrono::seconds;
 using namespace std;
+using boost::asio::chrono::seconds;
 
 string getIP(string head, string nil){
 	string resp = HTTPclient("login.hnust.cn").get();
@@ -29,12 +28,12 @@ HNUSTnet::HNUSTnet(const User& user):_user(user) {
 	ip = getIP("v4ip='", "'");
 	if (!checkIP(ip)) {
 		ip = getIP("v46ip='", "'");
-		cout << ip << endl;
 		if (!checkIP(ip)) {
 			cerr << "服务器返回ip不符合要求\n";
-			exit(-100);
+			ip = "0.0.0.0";
 		}
 	}
+	cout << "当前ip为" << ip << endl;
 }
 
 bool HNUSTnet::getOnline() {
@@ -44,11 +43,12 @@ bool HNUSTnet::getOnline() {
 	if (resp.find("注销页") != resp.npos) return true;
 	else {
 		cerr << "服务器返回在线状态错误\n";
-		exit(-101);
+		return false;
 	}
 }
 
-void HNUSTnet::login() {
+string HNUSTnet::login() {
+	cout << "尝试登录" << endl;
 	HTTPclient client("login.hnust.cn:801");
 	vector<pair<string, string>> args;
 	args.push_back({ "c","Portal" });
@@ -57,10 +57,11 @@ void HNUSTnet::login() {
 	args.push_back({ "wlan_user_ip",ip });
 	for (auto& i : _user.gen()) args.push_back(i);
 	args.push_back({ "v",to_string(rand() % 9000 + 1000) });
-	client.get("eportal/", args);
+	return client.get("eportal/", args);
 }
 
-void HNUSTnet::logout() {
+string HNUSTnet::logout() {
+	cout << "尝试登出" << endl;
 	HTTPclient client("login.hnust.cn:801");
 	vector<pair<string, string>> args;
 	args.push_back({ "c","Portal" });
@@ -68,14 +69,20 @@ void HNUSTnet::logout() {
 	args.push_back({ "login_method","1" });
 	args.push_back({ "wlan_user_ip",ip });
 	args.push_back({ "v",to_string(rand() % 9000 + 1000) });
-	client.get("eportal/", args);
+	return client.get("eportal/", args);
 }
 
 void HNUSTnet::loop() {
-	io_context io;
+	boost::asio::io_context io;
 	while (true) {
-		if (!getOnline()) login();
-		steady_timer t(io, seconds(5));
+		bool f = false;
+		while (!getOnline()) {
+			cout << "检测到未登录" << endl;
+			login();
+			f = true;
+		}
+		if (f) cout << "登入成功" << endl;
+		boost::asio::steady_timer t(io, seconds(5));
 		t.wait();
 	}
 }
