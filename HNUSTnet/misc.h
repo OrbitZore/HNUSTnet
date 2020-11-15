@@ -5,3 +5,4 @@
 std::vector<std::string> split(const std::string& str, const std::string& delimiters);
 bool prefix_with(const std::string& str, const std::string& sub);
 bool subfix_with(const std::string& str, const std::string& sub);
+void readUntil(std::istream& input, std::string& str, const std::string &c);

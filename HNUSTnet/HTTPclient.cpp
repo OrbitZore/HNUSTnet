@@ -29,37 +29,36 @@ string HTTPclient::makeHeaders(const string& method,const string& suffix, const 
 string HTTPclient::get(const string& suffix,const vector<pair<string, string>>& args){
 
     
-    auto s = makeClient(_url);
+    auto s(makeClient(_url));
 
     *s << makeHeaders("GET",suffix, args);
 
-    string ans,status;
-    getline(*s, status);
+    string rec;
+    readUntil(*s, rec, "\n"); rec.clear();
+    //不处理http状态码
+    readUntil(*s, rec, "\r\n\r\n");
 
-    while (!subfix_with(ans,"\r\n\r\n"))
-        ans += s->get();
-    for_each(ans.begin(), ans.end(), [](string::value_type& i) {i = tolower(i); });
+    for_each(rec.begin(), rec.end(), [](string::value_type& i) {i = tolower(i); });
 
     long long length=-1;
 
-    for (auto& i : split(ans, "\n"))
+    for (auto& i : split(rec, "\n"))
         if (prefix_with(i, CONTENT_LENGTH)) {
-            stringstream in(i.substr(i.find_last_of(":") + 1));
-            in >> length;
+            stringstream(i.substr(i.find_last_of(":") + 1)) 
+                >> length;
             break;
         }
-    ans.clear();
+    rec.clear();
 
-    if (length == -1) 
-        while (!subfix_with(ans, "\r\n\r\n")&&(!(*s)))
-            ans += s->get();
+    if (length == -1)
+        readUntil(*s,rec,"\r\n\r\n");
     else
-        for (int i = 1; i <= length; i++)
-            ans += s->get();
+        for (int i = 1; i <= length&&*s; i++)
+            rec += s->get();
 
     if (!*s) {
         cerr << "TCP连接错误" << endl;
         return "";
     }
-    return ans;
+    return rec;
 }

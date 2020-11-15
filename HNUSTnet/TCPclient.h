@@ -5,4 +5,4 @@
 #include <memory>
 #include "misc.h"
 
-std::unique_ptr<std::basic_iostream<char>> makeClient(std::string url);
+std::unique_ptr<boost::asio::ip::tcp::iostream> makeClient(std::string url);

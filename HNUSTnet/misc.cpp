@@ -25,3 +25,9 @@ bool subfix_with(const string& str, const string& sub) {
 		if (*i != *j) return false;
 	return true;
 }
+
+void readUntil(istream& input, string& str, const string &c) {
+	str.clear();
+	while (!subfix_with(str,c)&&input)
+		str+=input.get();
+}

@@ -35,13 +35,15 @@ HNUSTnet::HNUSTnet(const User& user):_user(user) {
 	}
 	cout << "当前ip为" << ip << endl;
 }
-
+static bool TCPGood = true;
 bool HNUSTnet::getOnline() {
 	string resp = HTTPclient("login.hnust.cn").get();
 	if (resp.find("上网登录页") != resp.npos) return false;
 	else
 	if (resp.find("注销页") != resp.npos) return true;
 	else {
+		if (resp.size() == 0) return TCPGood = false;
+		else TCPGood = true;
 		cerr << "服务器返回在线状态错误\n";
 		return false;
 	}
@@ -77,9 +79,16 @@ void HNUSTnet::loop() {
 	while (true) {
 		bool f = false;
 		while (!getOnline()) {
-			cout << "检测到未登录" << endl;
-			login();
-			f = true;
+			if (TCPGood) {
+				cout << "检测到未登录" << endl;
+				login();
+				f = true;
+			}
+			else {
+				cout << "检测到未连接iHNUST，等待5s" << endl;
+				boost::asio::steady_timer t(io, seconds(5));
+				t.wait();
+			}
 		}
 		if (f) cout << "登入成功" << endl;
 		boost::asio::steady_timer t(io, seconds(5));
