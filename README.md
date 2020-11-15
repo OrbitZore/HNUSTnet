@@ -1,4 +1,4 @@
-# HNUSTnet v1.0
+# HNUSTnet v1.1
 
 A iHNUST auto connect tool
 
@@ -93,6 +93,8 @@ vcpkg install boost
 生成项目完成后，点击生成，全部生成。即可在/out/build/xxxxx/HNUSTnet/目录中找到HNUSTnet.exe
 
 ## Update Log
+
+2020/11/15 v1.1-修复内存泄漏问题
 
 2020/11/14 v1.0-修复bug，实现跨平台编译
 
