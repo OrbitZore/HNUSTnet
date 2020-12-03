@@ -55,15 +55,13 @@ A iHNUST auto connect tool
 
 ## Build
 
-本程序使用cmake进行跨平台编译
-
 ### Ubuntu
 
 如官方源下载速度不佳可切换软件源至[TUNA](https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/)
 
 ```bash
 sudo apt update
-sudo apt install libboost-dev libboost-system-dev cmake make g++ git
+sudo apt install libboost-dev libboost-system-dev cmake make g++ git libiconv
 git clone https://github.com/OrbitZore/HNUSTnet.git
 mv HNUSTnet HNUSTnet-build
 cd HNUSTnet-build
@@ -83,7 +81,7 @@ rm HNUSTnet-build/ -R
 请安装vcpkg和Visual Studio 2019
 
 ```cmd
-vcpkg install boost
+vcpkg install boost iconv libiconv
 ```
 
 下载源代码zip文件解压至目录下
@@ -93,6 +91,8 @@ vcpkg install boost
 生成项目完成后，点击生成，全部生成。即可在/out/build/xxxxx/HNUSTnet/目录中找到HNUSTnet.exe
 
 ## Update Log
+
+2020/12/3 v1.2-修复编码问题
 
 2020/11/15 v1.1-修复内存泄漏问题
 

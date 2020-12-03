@@ -4,9 +4,8 @@
 #include "HNUSTnet.h"
 using namespace std;
 using boost::asio::chrono::seconds;
-
 string getIP(string head, string nil){
-	string resp = HTTPclient("login.hnust.cn").get();
+	string resp = HTTPclient("login.hnust.cn","gb2312").get();
 	auto beg = resp.find(head) + head.size();
 	if (beg >= resp.size()) return "";
 	auto len = resp.find(nil, beg);
@@ -15,7 +14,7 @@ string getIP(string head, string nil){
 }
 
 bool checkIP(string ip) {
-	vector<string> ips = split(ip, ".");
+	vector<string> ips = split(ip, u8".");
 	if (ips.size() != 4) return false;
 	for (auto& i : ips) {
 		int part = stoi(i);
@@ -25,9 +24,9 @@ bool checkIP(string ip) {
 }
 
 HNUSTnet::HNUSTnet(const User& user):_user(user) {
-	ip = getIP("v4ip='", "'");
+	ip = getIP(u8"v4ip='", u8"'");
 	if (!checkIP(ip)) {
-		ip = getIP("v46ip='", "'");
+		ip = getIP(u8"v46ip='", u8"'");
 		if (!checkIP(ip)) {
 			cerr << "服务器返回ip不符合要求\n";
 			ip = "0.0.0.0";
@@ -37,10 +36,10 @@ HNUSTnet::HNUSTnet(const User& user):_user(user) {
 }
 static bool TCPGood = true;
 bool HNUSTnet::getOnline() {
-	string resp = HTTPclient("login.hnust.cn").get();
-	if (resp.find("上网登录页") != resp.npos) return false;
+	string resp = HTTPclient("login.hnust.cn","gb2312").get();
+	if (resp.find(u8"上网登录页") != resp.npos) return false;
 	else
-	if (resp.find("注销页") != resp.npos) return true;
+	if (resp.find(u8"注销页") != resp.npos) return true;
 	else {
 		if (resp.size() == 0) return TCPGood = false;
 		else TCPGood = true;
@@ -51,7 +50,7 @@ bool HNUSTnet::getOnline() {
 
 string HNUSTnet::login() {
 	cout << "尝试登录" << endl;
-	HTTPclient client("login.hnust.cn:801");
+	HTTPclient client("login.hnust.cn:801", "gb2312");
 	vector<pair<string, string>> args;
 	args.push_back({ "c","Portal" });
 	args.push_back({ "a","login" });
@@ -64,7 +63,7 @@ string HNUSTnet::login() {
 
 string HNUSTnet::logout() {
 	cout << "尝试登出" << endl;
-	HTTPclient client("login.hnust.cn:801");
+	HTTPclient client("login.hnust.cn:801", "gb2312");
 	vector<pair<string, string>> args;
 	args.push_back({ "c","Portal" });
 	args.push_back({ "a","logout" });
@@ -82,16 +81,16 @@ void HNUSTnet::loop() {
 			if (TCPGood) {
 				cout << "检测到未登录" << endl;
 				login();
-				f = true;
-			}
-			else {
+				boost::asio::steady_timer t(io, seconds(2));
+				t.wait();
+			} else {
 				cout << "检测到未连接iHNUST，等待5s" << endl;
 				boost::asio::steady_timer t(io, seconds(5));
 				t.wait();
 			}
 		}
 		if (f) cout << "登入成功" << endl;
-		boost::asio::steady_timer t(io, seconds(5));
-		t.wait();
+		boost::asio::steady_timer t2(io, seconds(5));
+		t2.wait();
 	}
 }

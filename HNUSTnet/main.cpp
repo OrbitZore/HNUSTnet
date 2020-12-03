@@ -69,14 +69,18 @@ int main(int argc, char* argv[]) {
 			break;
 	}
 	if (argStatus < 0) { cout << helpMessage; return argStatus; }
+
 	HNUSTnet main(user);
+
 	if (method == "login") {
 		main.login();
 		if (!main.getOnline()) cout << "登入失败" << endl;
 		else cout << "登入成功" << endl;
 	}
+
 	if (method == "autologin")
 		main.loop();
+
 	if (method == "logout") {
 		main.logout();
 		if (main.getOnline()) cout << "登出失败" << endl;

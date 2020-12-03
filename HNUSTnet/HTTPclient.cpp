@@ -4,7 +4,7 @@ using namespace std;
 
 const std::string CONTENT_LENGTH("content-length");
 
-HTTPclient::HTTPclient(string url):_url(url) {
+HTTPclient::HTTPclient(const string& url,const string& encode):_url(url), converter("utf-8",encode) {
 
 }
 
@@ -60,5 +60,5 @@ string HTTPclient::get(const string& suffix,const vector<pair<string, string>>& 
         cerr << "TCPÁ¬½Ó´íÎó" << endl;
         return "";
     }
-    return rec;
+    return converter.convert(rec);
 }
