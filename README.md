@@ -1,4 +1,4 @@
-# HNUSTnet v1.1
+# HNUSTnet v1.2
 
 A iHNUST auto connect tool
 
